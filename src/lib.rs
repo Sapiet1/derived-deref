@@ -40,7 +40,7 @@ pub fn derive_deref(input: TokenStream) -> TokenStream {
 
     // ...to then get the desired field, one marked by `#[target]`.
     // However, if there's only one field, being marked is no longer required.
-    match extract_field_paramters(item_struct.fields, "Deref") {
+    match extract_field_parameters(item_struct.fields, "Deref") {
         Ok((field_name, field_type)) => impl_deref(name, generics, field_name, Some(field_type)),
         Err(error) => error,
     }
@@ -54,14 +54,13 @@ pub fn derive_deref_mut(input: TokenStream) -> TokenStream {
     let name = item_struct.ident;
     let generics = item_struct.generics;
 
-    match extract_field_paramters(item_struct.fields, "DerefMut") {
+    match extract_field_parameters(item_struct.fields, "DerefMut") {
         Ok((field_name, _)) => impl_deref(name, generics, field_name, None),
         Err(error) => error,
     }
 }
 
-// Acquires the only field or the marked field from the named fields coupled
-// with its index.
+// Acquires the only field or the marked field coupled with its index.
 fn get_field(fields: Punctuated<Field, Comma>) -> Result<(usize, Field), TokenStream> {
     let attribute_name = "target";
     let error = || quote! { compile_error!("`#[target]` is required for a field") }.into();
@@ -70,7 +69,7 @@ fn get_field(fields: Punctuated<Field, Comma>) -> Result<(usize, Field), TokenSt
     let mut fields_iter = fields.into_iter().fuse().enumerate();
     
     if has_one_field {
-        // This call to next should never fail.
+        // An infallible call to take the first field.
         fields_iter.next().ok_or_else(error)
     } else {
         // Below filters for the fields marked correctly with `#[target]`.
@@ -93,7 +92,7 @@ fn get_field(fields: Punctuated<Field, Comma>) -> Result<(usize, Field), TokenSt
     }
 }
 
-fn extract_field_paramters(fields: Fields, trait_name: &str) -> Result<(TokenStream2, Type), TokenStream> {
+fn extract_field_parameters(fields: Fields, trait_name: &str) -> Result<(TokenStream2, Type), TokenStream> {
     match fields {
         Fields::Named(fields) => {
             let (_, field) = get_field(fields.named)?;
