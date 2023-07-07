@@ -106,10 +106,11 @@ fn extract_field_parameters(fields: Fields, trait_name: &str) -> Result<(TokenSt
             let field_index = Index::from(field_index);
             let field_type = field.ty;
 
-            Ok((quote! { #field_index}, field_type))
+            Ok((quote! { #field_index }, field_type))
         },
         Fields::Unit => {
             let error = &format!("unable to implement `{}` trait for struct of no fields", trait_name)[..];
+
             Err(quote! {
                 compile_error!(#error);
             }
