@@ -63,7 +63,7 @@ pub fn derive_deref_mut(input: TokenStream) -> TokenStream {
 // Acquires the only field or the marked field coupled with its index.
 fn get_field(fields: Punctuated<Field, Comma>) -> Result<(usize, Field), TokenStream> {
     let attribute_name = "target";
-    let error = || quote! { compile_error!("`#[target]` is required for a field") }.into();
+    let error = || quote! { compile_error!("`#[target]` is required for a field"); }.into();
     
     let has_one_field = fields.len() == 1;
     let mut fields_iter = fields.into_iter().fuse().enumerate();
@@ -111,10 +111,7 @@ fn extract_field_parameters(fields: Fields, trait_name: &str) -> Result<(TokenSt
         Fields::Unit => {
             let error = &format!("unable to implement `{}` trait for struct of no fields", trait_name)[..];
 
-            Err(quote! {
-                compile_error!(#error);
-            }
-            .into())
+            Err(quote! { compile_error!(#error); }.into())
         }
     }
 }
