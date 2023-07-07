@@ -1,6 +1,6 @@
 [package]
 name = "derived-deref"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 description = "Crate for deriving the `Deref` and `DerefMut` traits"
 repository = "https://github.com/Sapiet1/derived-deref"
@@ -14,3 +14,4 @@ proc-macro = true
 [dependencies]
 syn = { version = "2", features = ["full"] }
 quote = "1"
+proc-macro2 = "1"
