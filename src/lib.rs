@@ -148,7 +148,7 @@ fn impl_deref(
             let reference = is_mut_reference.map_or_else(|| Some(quote!(&)), |_| None);
             
             quote! {
-                impl #impl_generics std::ops::Deref for #struct_name #type_generics #where_clause {
+                impl #impl_generics core::ops::Deref for #struct_name #type_generics #where_clause {
                     type Target = #field_type;
 
                     fn deref(&self) -> &Self::Target {
@@ -165,7 +165,7 @@ fn impl_deref(
             };
             
             quote! {
-                impl #impl_generics std::ops::DerefMut for #struct_name #type_generics #where_clause {
+                impl #impl_generics core::ops::DerefMut for #struct_name #type_generics #where_clause {
                     fn deref_mut(&mut self) -> &mut Self::Target {
                         #reference self.#field_name
                     }
