@@ -104,8 +104,7 @@ fn extract_field_parameters(fields: Fields, trait_name: &str) -> Result<(TokenSt
             let (_, field) = get_field(fields.named)?;
             let field_name = field.ident.unwrap();
             let (field_type, is_mut_reference) = match field.ty {
-                Type::Reference(reference_type) if reference_type.mutability.is_some() => (*reference_type.elem, Some(true)),
-                Type::Reference(reference_type) => (*reference_type.elem, Some(false)),
+                Type::Reference(reference_type) => (*reference_type.elem, Some(reference_type.mutability.is_some())),
                 field_type => (field_type, None),
             };
 
@@ -115,8 +114,7 @@ fn extract_field_parameters(fields: Fields, trait_name: &str) -> Result<(TokenSt
             let (field_index, field) = get_field(fields.unnamed)?;
             let field_index = Index::from(field_index);
             let (field_type, is_mut_reference) = match field.ty {
-                Type::Reference(reference_type) if reference_type.mutability.is_some() => (*reference_type.elem, Some(true)),
-                Type::Reference(reference_type) => (*reference_type.elem, Some(false)),
+                Type::Reference(reference_type) => (*reference_type.elem, Some(reference_type.mutability.is_some())),
                 field_type => (field_type, None),
             };
 
