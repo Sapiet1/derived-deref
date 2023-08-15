@@ -1,8 +1,9 @@
 # derived-deref
 
 A crate for deriving the [`Deref`](https://doc.rust-lang.org/std/ops/trait.Deref.html)
-and [`DerefMut`](https://doc.rust-lang.org/std/ops/trait.DerefMut.html) traits from the standard
-library onto structs with at least one field. 
+and [`DerefMut`](https://doc.rust-lang.org/std/ops/trait.DerefMut.html) 
+traits from the standard library onto structs with at least one field. 
+Fields with references are passed directly.
 
 # Examples
 
