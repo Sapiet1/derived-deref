@@ -44,7 +44,7 @@ pub fn derive_deref(input: TokenStream) -> TokenStream {
     // ...to then get the desired field, one marked by `#[target]`.
     // However, if there's only one field, being marked is no longer required.
     match extract_field_parameters(item_struct.fields, "Deref") {
-        Ok((field_name, field_type, is_reference)) => impl_deref(name, generics, field_name, Some(field_type), is_reference),
+        Ok((field_name, field_type, is_mut_reference)) => impl_deref(name, generics, field_name, Some(field_type), is_mut_reference),
         Err(error) => error,
     }
 }
@@ -53,7 +53,7 @@ pub fn derive_deref(input: TokenStream) -> TokenStream {
 /// trait, passing the field directly if a reference type. This will fail to
 /// compile if the chosen field is an immutable reference type.
 #[proc_macro_derive(DerefMut, attributes(target))]
-// Deriving for `DerefMut` is the same as with `Deref` with the excpetion that
+// Deriving for `DerefMut` is the same as with `Deref` with the exception that
 // `Target` does not need to be defined.
 pub fn derive_deref_mut(input: TokenStream) -> TokenStream {
     let item_struct = parse_macro_input!(input as ItemStruct);
@@ -61,7 +61,7 @@ pub fn derive_deref_mut(input: TokenStream) -> TokenStream {
     let generics = item_struct.generics;
 
     match extract_field_parameters(item_struct.fields, "DerefMut") {
-        Ok((field_name, _, is_reference)) => impl_deref(name, generics, field_name, None, is_reference),
+        Ok((field_name, _, is_mut_reference)) => impl_deref(name, generics, field_name, None, is_mut_reference),
         Err(error) => error,
     }
 }
@@ -69,7 +69,7 @@ pub fn derive_deref_mut(input: TokenStream) -> TokenStream {
 // Acquires the only field or the marked field coupled with its index.
 fn get_field(fields: Punctuated<Field, Comma>) -> Result<(usize, Field), TokenStream> {
     let attribute_name = "target";
-    let error = || quote! { compile_error!("`#[target]` is required for a field"); }.into();
+    let error = || quote! { compile_error!("`#[target]` is required for one field"); }.into();
     
     let has_one_field = fields.len() == 1;
     let mut fields_iter = fields.into_iter().fuse().enumerate();
@@ -162,7 +162,7 @@ fn impl_deref(
         None => {
             let reference = match is_mut_reference {
                 Some(true) => None,
-                Some(false) => return quote! { compile_error!("field is unable to be of an immutable reference"); }.into(),
+                Some(false) => return quote! { compile_error!("`#[target]` is unable to be of an immutable reference"); }.into(),
                 None => Some(quote!(&mut)),
             };
             
